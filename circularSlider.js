@@ -81,6 +81,7 @@ class Slide {
     this.drawBackgroundCircle();
     this.drawProgressCircle();
     this.drawHandler();
+    this.initEventListeners();
   }
   draw() {
     this.container.appendChild(this.group);
@@ -225,6 +226,96 @@ class Slide {
     const y = this.cy + this.radius * Math.sin(this.angleInRadians(angle));
 
     return { x, y };
+  }
+  initEventListeners() {
+    this.group.addEventListener('mousedown', this.sliderTouchStart.bind(this), false);
+    this.container.addEventListener('mousemove', this.sliderTouchMove.bind(this), false);
+    this.container.addEventListener('mouseup', this.sliderTouchEnd.bind(this), false);
+  }
+  sliderTouchStart(e) {
+    e.preventDefault();
+
+    this.mouseDownActive = true;
+
+    this.updateSlide(e);
+  }
+  sliderTouchMove(e) {
+    e.preventDefault();
+
+    if (!this.mouseDownActive) { return; }
+
+    this.updateSlide(e);
+  }
+  sliderTouchEnd(e) {
+    e.preventDefault();
+
+    this.mouseDownActive = false;
+
+    this.changeProgressCircleValue(this.currentAngle);
+    this.changeHandlerPosition(this.currentAngle);
+  }
+  /**
+   * Find x and y coordinates, calculate clicked angle and update slide elements.
+   *
+   * @param { EventListenerObject } e
+   */
+  updateSlide(e) {
+    const x = e.clientX;
+    const y = e.clientY;
+    const clickedAngle = this.calcAngle(x, y);
+    const currentStep = Math.round(clickedAngle / this.stepAngle); // calculate current step from clicked angle
+    this.currentAngle = currentStep * this.stepAngle; // set angle of current step
+
+    this.changeProgressCircleValue(clickedAngle);
+    this.changeHandlerPosition(clickedAngle);
+  }
+  /**
+   * Change progress circle value using given angle.
+   *
+   * @param { Number } angle
+   */
+  changeProgressCircleValue(angle= 0) {
+    this.progressCircle.setAttribute('d', this.calculateDescribeAttribute({
+      endAngle: angle
+    }));
+  }
+  /**
+   * Change handler position using given angle.
+   *
+   * @param { Number } angle
+   */
+  changeHandlerPosition(angle = 0) {
+    const { x, y } = this.calculateHandlerPosition(angle);
+
+    this.handler.setAttribute('cx', x);
+    this.handler.setAttribute('cy', y);
+  }
+  /**
+   * Calculate angle on of the circle from beginning point to the point we passed as functions parameter.
+   *
+   * @param { Number } x - x coordinates of the point on the circle.
+   * @param { Number } y - y coordinates of the point on the circle.
+   *
+   * @returns { Number } angle
+   */
+  calcAngle(x, y) {
+    // get svg group element and calculate center coordinates(cx, cy).
+    const container = this.group.getBoundingClientRect();
+    let cx = container.x + container.width / 2;
+    let cy = container.y + container.height / 2;
+
+    // calculate distance from the center of the circle to the given point.
+    let dx = x - cx;
+    let dy = y - cy;
+
+    // calculate the angle.
+    let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+
+    if (angle < 0) {
+      angle += 360;
+    }
+
+    return angle;
   }
 }
 
