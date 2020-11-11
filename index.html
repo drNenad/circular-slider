@@ -5,7 +5,7 @@
   <title>Circular Slider</title>
 </head>
 <body>
-
+  <div id="slider"></div>
 </body>
 
 <script type="text/javascript" src="circularSlider.js"></script>
@@ -13,20 +13,26 @@
   const slides = [
     {
       color: '#DC5748',
-      range: [0, 5],
+      range: {
+        min: 0,
+        max: 5
+      },
       step: 1,
       radius: 60,
-      description: 'Health care'
+      description: 'Transportation'
     },
     {
       color: '#DC5748',
-      range: [500, 999],
-      step: 15,
+      range: {
+        min: 5,
+        max: 30
+      },
+      step: 2,
       radius: 100,
-      description: 'Health care'
+      description: 'Food'
     }
   ];
   const container = document.getElementById('slider');
-  this.slider = new CircularSlider(slides, container);
+  const slider = new CircularSlider(slides, container);
 </script>
 </html>
