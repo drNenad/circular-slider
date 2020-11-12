@@ -1,6 +1,6 @@
 # Live Preview
 
-[Link](https://htmlpreview.github.io/?https://github.com/drNenad/circular-slider/blob/master/src/index.html)
+[Link](https://htmlpreview.github.io/?https://github.com/drNenad/circular-slider/blob/master/index.html)
 
 
 
