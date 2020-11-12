@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Circular Slider</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
   <div id="slider"></div>
@@ -12,24 +14,44 @@
 <script>
   const slides = [
     {
-      color: '#DC5748',
+      color: '#775090',
       range: {
-        min: 0,
-        max: 5
+        min: 440,
+        max: 1500
       },
-      step: 1,
-      radius: 60,
+      step: 40,
+      radius: 150,
       description: 'Transportation'
     },
     {
-      color: '#DC5748',
+      color: '#0e8dc5',
       range: {
         min: 5,
-        max: 30
+        max: 70
       },
       step: 2,
-      radius: 100,
+      radius: 110,
       description: 'Food'
+    },
+    {
+      color: '#67ab25',
+      range: {
+        min: 200,
+        max: 700
+      },
+      step: 60,
+      radius: 70,
+      description: 'Insurance'
+    },
+    {
+      color: '#fb6665',
+      range: {
+        min: 500,
+        max: 2000
+      },
+      step: 350,
+      radius: 30,
+      description: 'Health care'
     }
   ];
   const container = document.getElementById('slider');

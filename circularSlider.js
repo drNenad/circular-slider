@@ -31,12 +31,12 @@ class CircularSlider {
   }
   initSlides() {
     this.slides.forEach(slide => {
-      return new Slide({ ...slide, container: this.svgContainer });
+      return new Slide({ ...slide, container: this.svgContainer, uiContainer: this.uiContainer });
     });
   }
   draw() {
-    this.container.appendChild(this.svgContainer);
     this.container.appendChild(this.uiContainer);
+    this.container.appendChild(this.svgContainer);
   }
 }
 
@@ -45,23 +45,27 @@ class Slide {
    * @constructor
    *
    * @param { HTMLElement } container
+   * @param { HTMLElement } uiContainer
    * @param { String } color
    * @param { Object } range
    * @param { Number } step
    * @param { Number } radius
-   * @param { Object } sliderUI
+   * @param { String } description
    */
-  constructor({ container, color, range, step, radius, sliderUI } = {}) {
+  constructor({ container, uiContainer, color, range, step, radius, description } = {}) {
     this.container = container;
+    this.uiContainer = uiContainer;
     this.color = color;
     this.min = range.min ?? 0;
     this.max = range.max ?? 10;
     this.step = step || 1;
     this.radius = radius || 50;
+    this.description = description || '';
 
     this.group = null;                                                // svg group element to append all slide elements.
     this.progressCircle = null;                                       // svg path element used to show current progress.
     this.handler = null;                                              // svg circle element used to change current progress.
+    this.slideUI = null;                                              // slide UI class object, used to update the value in realtime.
     this.mouseDownActive = false;                                     // used to determine is user holding left click.
 
     this.cx = container.getAttribute('width') / 2;         // x coordinate of the center of parent svg container.
@@ -82,6 +86,7 @@ class Slide {
     this.drawProgressCircle();
     this.drawHandler();
     this.initEventListeners();
+    this.initSlideUI();
   }
   draw() {
     this.container.appendChild(this.group);
@@ -227,6 +232,10 @@ class Slide {
 
     return { x, y };
   }
+  initSlideUI() {
+    this.slideUI = new SlideUI({ color: this. color, description: this.description }, this.uiContainer);
+    this.slideUI.setValue(this.min);
+  }
   initEventListeners() {
     this.group.addEventListener('mousedown', this.sliderTouchStart.bind(this), false);
     this.container.addEventListener('mousemove', this.sliderTouchMove.bind(this), false);
@@ -268,6 +277,7 @@ class Slide {
 
     this.changeProgressCircleValue(clickedAngle);
     this.changeHandlerPosition(clickedAngle);
+    this.changeUIValue(currentStep);
   }
   /**
    * Change progress circle value using given angle.
@@ -317,8 +327,91 @@ class Slide {
 
     return angle;
   }
+  /**
+   * Calculate slide progress value from current step and change it in the Slide ui.
+   *
+   * @param { Number } currentStep.
+   */
+  changeUIValue(currentStep) {
+    let price = this.min + currentStep * this.step;
+
+    if (price > this.max) {
+      price = this.max;
+    }
+
+    this.slideUI.setValue(price);
+  }
 }
 
-class SliderUI {
+class SlideUI {
+  /**
+   * @constructor
+   *
+   * @param { Object } slide
+   * @param { HTMLElement } container
+   */
+  constructor({ color, description }, container) {
+    this.state = {
+      value: 0
+    };
 
+    this.container = container;
+    this.color = color || '#ffffff';
+    this.description = description || '';
+    this.slideUIWrapper = document.createElement('div');
+    this.valuePlaceholder = document.createElement('p');
+    this.currency = '$';
+
+    this.init();
+    this.draw();
+  }
+  init() {
+    this.initSlideUIWrapper();
+    this.initUICurrency();
+    this.initUIValue();
+    this.initUIColor();
+    this.initUIDescription();
+  }
+  draw() {
+    this.container.appendChild(this.slideUIWrapper);
+  }
+  initSlideUIWrapper() {
+    this.container.className = 'slider-ui-container';
+    this.slideUIWrapper.className = 'slide-ui-wrapper';
+  }
+  initUICurrency() {
+    const currency = document.createElement('span');
+    currency.className = 'slide-ui-currency';
+    currency.innerText = this.currency;
+
+    this.slideUIWrapper.appendChild(currency);
+  }
+  initUIValue() {
+    this.setValue(this.state.value);
+
+    this.slideUIWrapper.appendChild(this.valuePlaceholder);
+  }
+  initUIColor() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+    svg.setAttribute('width', '10');
+    svg.setAttribute('height', '10');
+    rect.setAttribute('width', '10');
+    rect.setAttribute('height', '10');
+    rect.setAttribute('fill', this.color);
+
+    svg.appendChild(rect);
+    this.slideUIWrapper.appendChild(svg);
+  }
+  initUIDescription() {
+    const description = document.createElement('span');
+
+    description.innerText = this.description;
+
+    this.slideUIWrapper.appendChild(description);
+  }
+  setValue(value) {
+    this.valuePlaceholder.innerText = value;
+  }
 }
