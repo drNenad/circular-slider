@@ -238,9 +238,15 @@ class Slide {
     this.slideUI.setValue(this.min);
   }
   initEventListeners() {
+    // click/desktop devices event listeners
     this.group.addEventListener('mousedown', this.sliderTouchStart.bind(this), false);
     this.container.addEventListener('mousemove', this.sliderTouchMove.bind(this), false);
     this.container.addEventListener('mouseup', this.sliderTouchEnd.bind(this), false);
+
+    // touch/mobile devices event listeners
+    this.group.addEventListener('touchstart', this.sliderTouchStart.bind(this), false);
+    this.container.addEventListener('touchmove', this.sliderTouchMove.bind(this), false);
+    this.container.addEventListener('touchend', this.sliderTouchEnd.bind(this), false);
   }
   sliderTouchStart(e) {
     e.preventDefault();
@@ -270,13 +276,37 @@ class Slide {
    * @param { EventListenerObject } e
    */
   updateSlide(e) {
-    const clickedAngle = this.calcAngle(e.clientX, e.clientY);
+    const { x, y } = this.calculateEventCoordinates(e);
+    const clickedAngle = this.calcAngle(x, y);
     const currentStep = Math.round(clickedAngle / this.stepAngle); // calculate current step from clicked angle
     this.currentAngle = currentStep * this.stepAngle; // set angle of current step
 
     this.changeProgressCircleValue(clickedAngle);
     this.changeHandlerPosition(clickedAngle);
     this.changeUIValue(currentStep);
+  }
+  /**
+   * Find x and y coordinates of event listener object.
+   *
+   * @param { EventListenerObject } e
+   *
+   * @returns { Object } { x, y } - coordinates
+   */
+  calculateEventCoordinates(e) {
+    let x = 0;
+    let y = 0;
+
+    if (e.type === 'mousedown' || e.type === 'mousemove') {
+      x = e.clientX;
+      y = e.clientY;
+    } else {
+      x = e.changedTouches[0].clientX;
+      y = e.changedTouches[0].clientY;
+    }
+
+    return {
+      x, y
+    }
   }
   /**
    * Change progress circle value using given angle.
