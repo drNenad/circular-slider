@@ -7,7 +7,7 @@
 ## Usage
 
 ```python
-import CircularSlider from 'circularSlider.js';
+import CircularSlider from 'src/circularSlider.js';
 
 
 const slides = [
