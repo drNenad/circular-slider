@@ -359,7 +359,7 @@ class SlideUI {
     this.description = description || '';
     this.slideUIWrapper = document.createElement('div');   // div element used to append all slide ui elements.
     this.valuePlaceholder = document.createElement('p');   // paragraph element to display slide value.
-    this.valueSymbol = '$';                                        // default value symbol.
+    this.valueSymbol = '$';                                // default value symbol.
 
     this.init();
     this.draw();
