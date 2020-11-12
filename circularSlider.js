@@ -68,14 +68,15 @@ class Slide {
     this.slideUI = null;                                              // slide UI class object, used to update the value in realtime.
     this.mouseDownActive = false;                                     // used to determine is user holding left click.
 
-    this.cx = container.getAttribute('width') / 2;         // x coordinate of the center of parent svg container.
-    this.cy = container.getAttribute('height') / 2;        // y coordinate of the center of parent svg container.
-    this.totalSteps = Math.ceil((this.max - this.min) / this.step); // total steps of the slide progress.
+    this.cx = container.getAttribute('width') / 2;                    // x coordinate of the center of parent svg container.
+    this.cy = container.getAttribute('height') / 2;                   // y coordinate of the center of parent svg container.
+    this.totalSteps = Math.ceil((this.max - this.min) / this.step);   // total steps of the slide progress.
     this.stepAngle = 360 / this.totalSteps;                           // Angle from the beginning of the circle to the first step.
     this.circumference = 2 * Math.PI * this.radius;
     this.currentAngle = 0;                                            // last clicked angle on the slide.
     this.strokeWidth = 20;
     this.strokeBgColor = '#cecfd1';
+    this.handlerRadius = 13;
 
     this.init();
     this.draw();
@@ -121,7 +122,7 @@ class Slide {
     handler.setAttribute('cy', y);
     handler.setAttribute('fill', '#f0f0f0');
     handler.setAttribute('stroke', this.strokeBgColor);
-    handler.setAttribute('r', 13);
+    handler.setAttribute('r', this.handlerRadius);
 
     this.handler = handler;
     this.group.appendChild(handler);
@@ -328,7 +329,7 @@ class Slide {
     return angle;
   }
   /**
-   * Calculate slide progress value from current step and change it in the Slide ui.
+   * Calculate slide progress value from current step and change it in the slide ui.
    *
    * @param { Number } currentStep.
    */
@@ -358,16 +359,16 @@ class SlideUI {
     this.container = container;
     this.color = color || '#ffffff';
     this.description = description || '';
-    this.slideUIWrapper = document.createElement('div');
-    this.valuePlaceholder = document.createElement('p');
-    this.currency = '$';
+    this.slideUIWrapper = document.createElement('div');   // div element used to append all slide ui elements.
+    this.valuePlaceholder = document.createElement('p');   // paragraph element to display slide value.
+    this.valueSymbol = '$';                                           // default value symbol.
 
     this.init();
     this.draw();
   }
   init() {
     this.initSlideUIWrapper();
-    this.initUICurrency();
+    this.initUIValueSymbol();
     this.initUIValue();
     this.initUIColor();
     this.initUIDescription();
@@ -379,12 +380,12 @@ class SlideUI {
     this.container.className = 'slider-ui-container';
     this.slideUIWrapper.className = 'slide-ui-wrapper';
   }
-  initUICurrency() {
-    const currency = document.createElement('span');
-    currency.className = 'slide-ui-currency';
-    currency.innerText = this.currency;
+  initUIValueSymbol() {
+    const symbol = document.createElement('span');
+    symbol.className = 'slide-ui-symbol';
+    symbol.innerText = this.valueSymbol;
 
-    this.slideUIWrapper.appendChild(currency);
+    this.slideUIWrapper.appendChild(symbol);
   }
   initUIValue() {
     this.setValue(this.state.value);

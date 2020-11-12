@@ -17,7 +17,7 @@
     word-break: break-all;
 }
 
-.slide-ui-wrapper p, .slide-ui-currency {
+.slide-ui-wrapper p, .slide-ui-symbol {
     font-size: 24px;
     font-weight: 800;
 }
