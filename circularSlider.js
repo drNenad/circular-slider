@@ -270,9 +270,7 @@ class Slide {
    * @param { EventListenerObject } e
    */
   updateSlide(e) {
-    const x = e.clientX;
-    const y = e.clientY;
-    const clickedAngle = this.calcAngle(x, y);
+    const clickedAngle = this.calcAngle(e.clientX, e.clientY);
     const currentStep = Math.round(clickedAngle / this.stepAngle); // calculate current step from clicked angle
     this.currentAngle = currentStep * this.stepAngle; // set angle of current step
 
